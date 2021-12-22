@@ -1,8 +1,0 @@
-cmake_minimum_required(VERSION 3.21)
-project(space_rover)
-
-set(CMAKE_CXX_STANDARD 20)
-
-add_executable(main src/main.cpp src/rover.h)
-add_executable(test test/rover_test.cc src/rover.h)
-add_executable(examples test/rover_example.cc src/rover.h)
