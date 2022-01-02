@@ -3,6 +3,8 @@
 #include <memory>
 
 #include "../src/rover.h"
+#include "../src/command.h"
+#include "../src/direction.h"
 
 // import "../src/rover"; // TODO: idk how to import from a subdirectory
 

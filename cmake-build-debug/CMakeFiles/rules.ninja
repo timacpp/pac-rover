@@ -22,29 +22,10 @@ rule CUSTOM_COMMAND
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__main_Debug
-  depfile = $DEP_FILE
-  deps = gcc
-  command = /bin/c++ $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
-  description = Building CXX object $out
-
-
-#############################################
-# Rule for linking CXX executable.
-
-rule CXX_EXECUTABLE_LINKER__main_Debug
-  command = $PRE_LINK && /bin/c++ $FLAGS $LINK_FLAGS $in -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
-  description = Linking CXX executable $TARGET_FILE
-  restat = $RESTAT
-
-
-#############################################
-# Rule for compiling CXX files.
-
 rule CXX_COMPILER__test_Debug
   depfile = $DEP_FILE
   deps = gcc
-  command = /bin/c++ $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  command = /Library/Developer/CommandLineTools/usr/bin/c++ $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
   description = Building CXX object $out
 
 
@@ -52,7 +33,7 @@ rule CXX_COMPILER__test_Debug
 # Rule for linking CXX executable.
 
 rule CXX_EXECUTABLE_LINKER__test_Debug
-  command = $PRE_LINK && /bin/c++ $FLAGS $LINK_FLAGS $in -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
+  command = $PRE_LINK && /Library/Developer/CommandLineTools/usr/bin/c++ $FLAGS -Wl,-search_paths_first -Wl,-headerpad_max_install_names $LINK_FLAGS $in -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
   description = Linking CXX executable $TARGET_FILE
   restat = $RESTAT
 
@@ -63,7 +44,7 @@ rule CXX_EXECUTABLE_LINKER__test_Debug
 rule CXX_COMPILER__examples_Debug
   depfile = $DEP_FILE
   deps = gcc
-  command = /bin/c++ $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  command = /Library/Developer/CommandLineTools/usr/bin/c++ $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
   description = Building CXX object $out
 
 
@@ -71,7 +52,26 @@ rule CXX_COMPILER__examples_Debug
 # Rule for linking CXX executable.
 
 rule CXX_EXECUTABLE_LINKER__examples_Debug
-  command = $PRE_LINK && /bin/c++ $FLAGS $LINK_FLAGS $in -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
+  command = $PRE_LINK && /Library/Developer/CommandLineTools/usr/bin/c++ $FLAGS -Wl,-search_paths_first -Wl,-headerpad_max_install_names $LINK_FLAGS $in -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
+  description = Linking CXX executable $TARGET_FILE
+  restat = $RESTAT
+
+
+#############################################
+# Rule for compiling CXX files.
+
+rule CXX_COMPILER__main_Debug
+  depfile = $DEP_FILE
+  deps = gcc
+  command = /Library/Developer/CommandLineTools/usr/bin/c++ $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  description = Building CXX object $out
+
+
+#############################################
+# Rule for linking CXX executable.
+
+rule CXX_EXECUTABLE_LINKER__main_Debug
+  command = $PRE_LINK && /Library/Developer/CommandLineTools/usr/bin/c++ $FLAGS -Wl,-search_paths_first -Wl,-headerpad_max_install_names $LINK_FLAGS $in -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
   description = Linking CXX executable $TARGET_FILE
   restat = $RESTAT
 
@@ -80,7 +80,7 @@ rule CXX_EXECUTABLE_LINKER__examples_Debug
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /snap/clion/175/bin/cmake/linux/bin/cmake --regenerate-during-build -S"/home/tima/Coding/C&C++/space-rover" -B"/home/tima/Coding/C&C++/space-rover/cmake-build-debug"
+  command = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake --regenerate-during-build -S/Users/laplasjan/Documents/GitHub/space-rover -B/Users/laplasjan/Documents/GitHub/space-rover/cmake-build-debug
   description = Re-running CMake...
   generator = 1
 
@@ -89,7 +89,7 @@ rule RERUN_CMAKE
 # Rule for cleaning all built files.
 
 rule CLEAN
-  command = /snap/clion/175/bin/ninja/linux/ninja $FILE_ARG -t clean $TARGETS
+  command = /Applications/CLion.app/Contents/bin/ninja/mac/ninja $FILE_ARG -t clean $TARGETS
   description = Cleaning all built files...
 
 
@@ -97,6 +97,6 @@ rule CLEAN
 # Rule for printing all primary targets available.
 
 rule HELP
-  command = /snap/clion/175/bin/ninja/linux/ninja -t targets
+  command = /Applications/CLion.app/Contents/bin/ninja/mac/ninja -t targets
   description = All primary targets available:
 
