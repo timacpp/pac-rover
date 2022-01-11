@@ -12,8 +12,8 @@ enum class Direction {
     WEST
 };
 
-Direction to_right(Direction &dir) {
-    switch (dir) {
+Direction to_right(Direction direction) {
+    switch (direction) {
         case Direction::NORTH:
             return Direction::EAST;
         case Direction::EAST:
@@ -25,8 +25,8 @@ Direction to_right(Direction &dir) {
     }
 }
 
-Direction to_left(Direction &dir) {
-    switch (dir) {
+Direction to_left(Direction direction) {
+    switch (direction) {
         case Direction::NORTH:
             return Direction::WEST;
         case Direction::EAST:
