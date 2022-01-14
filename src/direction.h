@@ -1,41 +1,42 @@
-//
-// Created by Piotr Kamiński on 02/01/2022.
-//
+#ifndef DIRECTION_H
+#define DIRECTION_H
 
-#ifndef SPACE_ROVER_DIRECTION_H
-#define SPACE_ROVER_DIRECTION_H
+#include <cstdint>
 
-enum class Direction {
-    NORTH,
-    EAST,
-    SOUTH,
-    WEST
+using ordinal_t = uint8_t;
+
+enum class Direction : ordinal_t {
+    NORTH = 0x0,
+    EAST  = 0x1,
+    SOUTH = 0x2,
+    WEST  = 0x3,
 };
 
-Direction to_right(Direction direction) {
-    switch (direction) {
-        case Direction::NORTH:
-            return Direction::EAST;
-        case Direction::EAST:
-            return Direction::SOUTH;
-        case Direction::SOUTH:
-            return Direction::WEST;
-        case Direction::WEST:
-            return Direction::NORTH;
-    }
+constexpr ordinal_t MAX_ORDINAL{
+    static_cast<ordinal_t>(std::max({
+        Direction::NORTH, Direction::SOUTH,
+        Direction::WEST, Direction::EAST
+    }))
+};
+
+constexpr std::array<std::string_view, MAX_ORDINAL + 1> DIRECTION_NAME {
+    "NORTH", "EAST", "SOUTH", "WEST"
+};
+
+static std::ostream& operator<<(std::ostream& out, Direction& dir) {
+    return out << DIRECTION_NAME[static_cast<ordinal_t>(dir)];
 }
 
-Direction to_left(Direction direction) {
-    switch (direction) {
-        case Direction::NORTH:
-            return Direction::WEST;
-        case Direction::EAST:
-            return Direction::NORTH;
-        case Direction::SOUTH:
-            return Direction::EAST;
-        case Direction::WEST:
-            return Direction::SOUTH;
-    }
+static Direction& operator++(Direction& dir) {
+    const auto next_ordinal{static_cast<ordinal_t>(dir) + 1};
+    dir = static_cast<Direction>(next_ordinal % MAX_ORDINAL);
+    return dir;
 }
 
-#endif //SPACE_ROVER_DIRECTION_H
+static Direction& operator--(Direction& dir) {
+    const auto next_ordinal{static_cast<ordinal_t>(dir) - 1};
+    dir = static_cast<Direction>((MAX_ORDINAL + next_ordinal) % MAX_ORDINAL);
+    return dir;
+}
+
+#endif // DIRECTION_H
