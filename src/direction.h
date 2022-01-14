@@ -2,6 +2,7 @@
 #define DIRECTION_H
 
 #include <cstdint>
+#include <array>
 
 using ordinal_t = uint8_t;
 
@@ -19,24 +20,25 @@ constexpr ordinal_t MAX_ORDINAL{
     }))
 };
 
-constexpr std::array<std::string_view, MAX_ORDINAL + 1> DIRECTION_NAME {
+std::array<std::string_view, MAX_ORDINAL + 1> DIRECTION_NAME {
     "NORTH", "EAST", "SOUTH", "WEST"
 };
 
-static std::ostream& operator<<(std::ostream& out, Direction& dir) {
+std::ostream& operator<<(std::ostream& out, Direction& dir) {
     return out << DIRECTION_NAME[static_cast<ordinal_t>(dir)];
 }
 
-static Direction& operator++(Direction& dir) {
+Direction& operator++(Direction& dir) {
     const auto next_ordinal{static_cast<ordinal_t>(dir) + 1};
     dir = static_cast<Direction>(next_ordinal % MAX_ORDINAL);
     return dir;
 }
 
-static Direction& operator--(Direction& dir) {
+Direction& operator--(Direction& dir) {
     const auto next_ordinal{static_cast<ordinal_t>(dir) - 1};
     dir = static_cast<Direction>((MAX_ORDINAL + next_ordinal) % MAX_ORDINAL);
     return dir;
 }
+
 
 #endif // DIRECTION_H

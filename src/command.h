@@ -72,7 +72,9 @@ struct RotateLeft : Command {
     RotateLeft() = default;
 
     int move_rover(Rover &rover) override {
-        rover.set_direction(to_left(rover.get_direction()));
+        Direction d = rover.get_direction();
+        --d;
+        rover.set_direction(d);
         return 0;
     }
 };
@@ -81,7 +83,9 @@ struct RotateRight : Command {
     RotateRight() = default;
 
     int move_rover(Rover &rover) override {
-        rover.set_direction(to_right(rover.get_direction()));
+        Direction d = rover.get_direction();
+        ++d;
+        rover.set_direction(d);
         return 0;
     }
 };

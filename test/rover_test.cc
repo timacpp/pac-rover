@@ -12,7 +12,6 @@ using namespace std;
 
 int main() {
     // Podczas budowy łazika można zaprogramawać jego komendy oraz ustawić różne czujniki.
-    //compose({move_forward(), rotate_right()});
     Rover r{};
     cout << r;
     r.land({0, 0}, Direction::EAST);

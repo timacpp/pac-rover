@@ -21,7 +21,7 @@ struct FalseSensor : public Sensor {
         return false;
     }
 };
-
+/*
 int main() {
     // Podczas budowy łazika można zaprogramawać jego komendy oraz ustawić różne czujniki.
     auto rover = RoverBuilder()
@@ -65,3 +65,5 @@ int main() {
     broken_rover.execute("X");
     std::cout << broken_rover << std::endl;
 }
+
+ */
