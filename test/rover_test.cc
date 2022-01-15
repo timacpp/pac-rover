@@ -13,9 +13,9 @@ using namespace std;
 int main() {
     // Podczas budowy łazika można zaprogramawać jego komendy oraz ustawić różne czujniki.
 /*
-    ptr_to_command c = move_forward();
+    command_ptr c = move_forward();
 
-    ptr_to_command cc = compose({move_forward(), move_forward(), rotate_left(), move_forward()});
+    command_ptr cc = compose({move_forward(), move_forward(), rotate_left(), move_forward()});
     std::unordered_map<char, std::shared_ptr<Command>> comm;
     comm.insert({'A', c});
     comm.insert({'B', cc});
@@ -24,7 +24,7 @@ int main() {
 
     vector<shared_ptr<Sensor>> sensors;
     Rover r{comm, sensors};
-    r.land({0, 0}, Direction::EAST);
+    r.set({0, 0}, Direction::EAST);
     cout << r;
     r.execute("C");
     cout << r;

@@ -20,23 +20,29 @@ constexpr ordinal_t MAX_ORDINAL{
     }))
 };
 
-std::array<std::string_view, MAX_ORDINAL + 1> DIRECTION_NAME {
+constexpr std::array<std::string_view, MAX_ORDINAL + 1> DIRECTION_NAME = {
     "NORTH", "EAST", "SOUTH", "WEST"
 };
 
 std::ostream& operator<<(std::ostream& out, const Direction& dir) {
-    return out << DIRECTION_NAME[static_cast<ordinal_t>(dir)];
+    const auto ordinal{static_cast<ordinal_t>(dir)};
+    return out << DIRECTION_NAME[ordinal];
 }
 
 Direction& operator++(Direction& dir) {
-    const auto next_ordinal{static_cast<ordinal_t>(dir) + 1};
-    dir = static_cast<Direction>(next_ordinal % (MAX_ORDINAL + 1));
+    auto next_ordinal{static_cast<ordinal_t>(dir) + 1};
+
+    next_ordinal %= (MAX_ORDINAL + 1);
+    dir = static_cast<Direction>(next_ordinal);
     return dir;
 }
 
 Direction& operator--(Direction& dir) {
-    const auto next_ordinal{static_cast<ordinal_t>(dir) - 1};
-    dir = static_cast<Direction>(((MAX_ORDINAL + 1) + next_ordinal) % (MAX_ORDINAL + 1));
+    auto next_ordinal{static_cast<ordinal_t>(dir) - 1};
+
+    next_ordinal = (next_ordinal + MAX_ORDINAL + 1) % (MAX_ORDINAL + 1);
+    dir = static_cast<Direction>(next_ordinal);
+
     return dir;
 }
 

@@ -1,124 +1,120 @@
-//
-// Created by Piotr Kamiński on 15/01/2022.
-//
+#ifndef ROVER_STATE_H
+#define ROVER_STATE_H
 
-#ifndef SPACE_ROVER_ROVER_STATE_H
-#define SPACE_ROVER_ROVER_STATE_H
-
-using coordinates = std::pair<coordinate_t, coordinate_t>;
+#include "position.h"
+#include "direction.h"
 
 struct Sensor {
     virtual bool is_safe(coordinate_t x, coordinate_t y) = 0;
 
-    virtual ~Sensor() { }
+    virtual ~Sensor() = default; // TODO: default is bad
 };
+
+using sensor_ptr = std::unique_ptr<Sensor>;
 
 class SensorFalse : public std::exception {
 
 };
 
 class RoverState {
-private:
-    bool landed;
-    bool stopped;
-    Position current_position;
-    Direction current_direction;
-
 public:
-    RoverState() : landed{false}, stopped{false}, current_position{} { }
+    RoverState() : landed{false}, stopped{false}, direction{Direction::NORTH} {}
 
-    void land(Position landing_spot, Direction facing) {
+    void set(Position& landing_spot, Direction& facing_direction) {
         landed = true;
-        stopped = false;
-        current_position = landing_spot;
-        current_direction = facing;
+        position = landing_spot;
+        direction = facing_direction;
     }
 
     void stop_rover() {
         stopped = true;
     }
 
-    void try_forward(const std::vector<std::unique_ptr<Sensor>> &sensors) {
+    void advance_forward(const std::vector<sensor_ptr>& sensors) {
         if (!landed)
             throw std::exception();
         stopped = false;
-        Position position = current_position;
-        switch (current_direction) {
+        Position other_position = position;
+        switch (direction) {
             case Direction::NORTH:
-                position += {0, 1};
+                other_position += {0, 1};
                 break;
             case Direction::EAST:
-                position += {1, 0};
+                other_position += {1, 0};
                 break;
             case Direction::SOUTH:
-                position += {0, -1};
+                other_position += {0, -1};
                 break;
             case Direction::WEST:
-                position += {-1, 0};
+                other_position += {-1, 0};
         }
 
         for (auto &sensor : sensors) {
-            if (!sensor->is_safe(position.get_x(), position.get_y())) {
+            if (!sensor->is_safe(other_position.get_x(), other_position.get_y())) {
                 stopped = true;
                 throw SensorFalse();
             }
         }
 
-        current_position = position;
+        position = other_position;
     }
 
-    void try_backward(const std::vector<std::unique_ptr<Sensor>> &sensors) {
+    void advance_backward(const std::vector<sensor_ptr>& sensors) {
         if (!landed)
             throw std::exception();
         stopped = false;
-        Position position = current_position;
-        switch (current_direction) {
+        Position other_position = position;
+        switch (direction) {
             case Direction::NORTH:
-                position += {0, -1};
+                other_position += {0, -1};
                 break;
             case Direction::EAST:
-                position += {-1, 0};
+                other_position += {-1, 0};
                 break;
             case Direction::SOUTH:
-                position += {0, 1};
+                other_position += {0, 1};
                 break;
             case Direction::WEST:
-                position += {1, 0};
+                other_position += {1, 0};
         }
 
         for (auto &sensor : sensors) {
-            if (!sensor->is_safe(position.get_x(), position.get_y())) {
+            if (!sensor->is_safe(other_position.get_x(), other_position.get_y())) {
                 stopped = true;
                 throw SensorFalse();
             }
         }
 
-        current_position = position;
+        position = other_position;
     }
 
     void rotate_right() {
         if (!landed)
             throw std::exception();
         stopped = false;
-        ++current_direction;
+        ++direction;
     }
 
     void rotate_left() {
         if (!landed)
             throw std::exception();
         stopped = false;
-        --current_direction;
+        --direction;
     }
 
     friend std::ostream& operator<<(std::ostream& out, const RoverState& state) noexcept {
         if (!state.landed)
             return out << "unknown";
 
-        out << state.current_position << " " << state.current_direction;
-        if (state.stopped)
-            out << " " << "stopped";
-        return out;
+        return out << state.position << " "
+                   << state.direction
+                   << (state.stopped ? " stopped" : "");
     }
+private:
+    bool landed;
+    bool stopped;
+    Position position;
+    Direction direction;
 };
 
-#endif //SPACE_ROVER_ROVER_STATE_H
+#endif // ROVER_STATE_H

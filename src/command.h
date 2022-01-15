@@ -1,103 +1,109 @@
-//
-// Created by Piotr Kamiński on 02/01/2022.
-//
+#ifndef COMMAND_H
+#define COMMAND_H
 
-#ifndef SPACE_ROVER_COMMAND_H
-#define SPACE_ROVER_COMMAND_H
-
-#include <utility>
+#include <memory>
 #include <vector>
 #include <initializer_list>
-#include <memory>
+
 #include "rover_state.h"
-#include "direction.h"
 
 struct Command {
-    virtual void move_rover(RoverState& rover_state, const std::vector<std::unique_ptr<Sensor>>& sensors) = 0;
+    virtual void perform(RoverState& state, const std::vector<sensor_ptr>& sensors) const = 0;
+
+    virtual ~Command() = default; // TODO: default is bad
 };
 
-using ptr_to_command = std::shared_ptr<Command>;
+using command_ptr = std::shared_ptr<Command>;
 
-struct MoveForward : Command {
+struct MoveForward : public Command {
     MoveForward() = default;
 
-    void move_rover(RoverState& rover_state, const std::vector<std::unique_ptr<Sensor>>& sensors) override {
-        rover_state.try_forward(sensors);
+    ~MoveForward() override = default;
+
+    void perform(RoverState& state, const std::vector<sensor_ptr>& sensors) const override {
+        state.advance_forward(sensors);
     }
 };
 
-
-struct MoveBackward : Command {
+struct MoveBackward : public Command {
     MoveBackward() = default;
 
-    void move_rover(RoverState& rover_state, const std::vector<std::unique_ptr<Sensor>>& sensors) override {
-        rover_state.try_backward(sensors);
+    ~MoveBackward() override = default;
+
+    void perform(RoverState& state, const std::vector<sensor_ptr>& sensors) const override {
+        state.advance_backward(sensors);
     }
 };
 
-
-struct RotateLeft : Command {
+struct RotateLeft : public Command {
     RotateLeft() = default;
 
-    void move_rover(RoverState& rover_state, const std::vector<std::unique_ptr<Sensor>>& sensors){
-        rover_state.rotate_left();
+    ~RotateLeft() override = default;
+
+    void perform(RoverState& state, const std::vector<sensor_ptr>& sensors) const override {
+        state.rotate_left();
     }
 };
 
-struct RotateRight : Command {
+struct RotateRight : public Command {
     RotateRight() = default;
 
-    void move_rover(RoverState& rover_state, const std::vector<std::unique_ptr<Sensor>>& sensors) {
-        rover_state.rotate_right();
+    ~RotateRight() override = default;
+
+    void perform(RoverState& state, const std::vector<sensor_ptr>& sensors) const override {
+        state.rotate_right();
     }
 };
 
+struct Compose : public Command {
+    Compose(std::initializer_list<command_ptr> commands) : commands{commands} {}
 
-struct Compose : Command {
-    Compose(std::initializer_list<ptr_to_command> _commands) : commands{_commands} { }
+    ~Compose() override {  // TODO: idk if it's good
+        commands.clear();
+    }
 
-    void move_rover(RoverState& rover_state, const std::vector<std::unique_ptr<Sensor>>& sensors) {
-        for (auto &command : commands)
-            command->move_rover(rover_state, sensors);
+    void perform(RoverState& state, const std::vector<sensor_ptr>& sensors) const override {
+        for (const auto& command : commands) {
+            command->perform(state, sensors);
+        }
     }
 
 private:
-    std::vector<ptr_to_command> commands;
+    std::vector<command_ptr> commands;
 };
-
 
 #define MOVE_FORWARD 0
 #define MOVE_BACKWARD 1
 #define ROTATE_LEFT 2
 #define ROTATE_RIGHT 3
-ptr_to_command basic_commands[4];
+command_ptr basic_commands[4];
 
-ptr_to_command move_forward() {
+command_ptr move_forward() {
     if (!basic_commands[MOVE_FORWARD])
         basic_commands[MOVE_FORWARD] = std::make_shared<MoveForward>();
     return basic_commands[MOVE_FORWARD];
 }
 
-ptr_to_command move_backward() {
+command_ptr move_backward() {
     if (!basic_commands[MOVE_BACKWARD])
         basic_commands[MOVE_BACKWARD] = std::make_shared<MoveBackward>();
     return basic_commands[MOVE_BACKWARD];
 }
 
-ptr_to_command rotate_left() {
+command_ptr rotate_left() {
     if (!basic_commands[ROTATE_LEFT])
         basic_commands[ROTATE_LEFT] = std::make_shared<RotateLeft>();
     return basic_commands[ROTATE_LEFT];
 }
 
-ptr_to_command rotate_right() {
+command_ptr rotate_right() {
     if (!basic_commands[ROTATE_RIGHT])
         basic_commands[ROTATE_RIGHT] = std::make_shared<RotateRight>();
     return basic_commands[ROTATE_RIGHT];
 }
 
-ptr_to_command compose(std::initializer_list<ptr_to_command> command_list) {
+command_ptr compose(std::initializer_list<command_ptr> command_list) {
     return std::make_shared<Compose>(command_list);
 }
 
-#endif //SPACE_ROVER_COMMAND_H
+#endif // COMMAND_H
