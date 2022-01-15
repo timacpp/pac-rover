@@ -12,6 +12,8 @@ public:
 
     Position(coordinate_t x, coordinate_t y) : x{x}, y{y} {}
 
+    Position &operator=(const Position&) = default;
+
     coordinate_t get_x() const noexcept {
         return x;
     }

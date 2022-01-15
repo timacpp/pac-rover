@@ -24,19 +24,19 @@ std::array<std::string_view, MAX_ORDINAL + 1> DIRECTION_NAME {
     "NORTH", "EAST", "SOUTH", "WEST"
 };
 
-std::ostream& operator<<(std::ostream& out, Direction& dir) {
+std::ostream& operator<<(std::ostream& out, const Direction& dir) {
     return out << DIRECTION_NAME[static_cast<ordinal_t>(dir)];
 }
 
 Direction& operator++(Direction& dir) {
     const auto next_ordinal{static_cast<ordinal_t>(dir) + 1};
-    dir = static_cast<Direction>(next_ordinal % MAX_ORDINAL);
+    dir = static_cast<Direction>(next_ordinal % (MAX_ORDINAL + 1));
     return dir;
 }
 
 Direction& operator--(Direction& dir) {
     const auto next_ordinal{static_cast<ordinal_t>(dir) - 1};
-    dir = static_cast<Direction>((MAX_ORDINAL + next_ordinal) % MAX_ORDINAL);
+    dir = static_cast<Direction>(((MAX_ORDINAL + 1) + next_ordinal) % (MAX_ORDINAL + 1));
     return dir;
 }
 

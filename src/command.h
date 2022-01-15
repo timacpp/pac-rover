@@ -9,11 +9,11 @@
 #include <vector>
 #include <initializer_list>
 #include <memory>
-#include "rover.h"
+#include "rover_state.h"
 #include "direction.h"
 
 struct Command {
-    virtual int move_rover(Rover &rover) = 0;
+    virtual void move_rover(RoverState& rover_state, const std::vector<std::shared_ptr<Sensor>>& sensors) = 0;
 };
 
 using ptr_to_command = std::shared_ptr<Command>;
@@ -21,72 +21,34 @@ using ptr_to_command = std::shared_ptr<Command>;
 struct MoveForward : Command {
     MoveForward() = default;
 
-    int move_rover(Rover &rover) override {
-        coordinates coords = rover.get_coordinates();
-        switch (rover.get_direction()) {
-            case Direction::NORTH:
-                coords = {coords.first, coords.second + 1};
-                break;
-            case Direction::EAST:
-                coords = {coords.first + 1, coords.second};
-                break;
-            case Direction::SOUTH:
-                coords = {coords.first, coords.second - 1};
-                break;
-            case Direction::WEST:
-                coords = {coords.first - 1, coords.second};
-        }
-
-        if (rover.check_and_go(coords) != 0)
-            return 1;
-        return 0;
+    void move_rover(RoverState& rover_state, const std::vector<std::shared_ptr<Sensor>>& sensors) override {
+        rover_state.try_forward(sensors);
     }
 };
+
 
 struct MoveBackward : Command {
     MoveBackward() = default;
 
-    int move_rover(Rover &rover) override {
-        coordinates coords = rover.get_coordinates();
-        switch (rover.get_direction()) {
-            case Direction::NORTH:
-                coords = {coords.first, coords.second - 1};
-                break;
-            case Direction::EAST:
-                coords = {coords.first - 1, coords.second};
-                break;
-            case Direction::SOUTH:
-                coords = {coords.first, coords.second + 1};
-                break;
-            case Direction::WEST:
-                coords = {coords.first + 1, coords.second};
-        }
-
-        if (rover.check_and_go(coords) != 0)
-            return 1;
-        return 0;
+    void move_rover(RoverState& rover_state, const std::vector<std::shared_ptr<Sensor>>& sensors) override {
+        rover_state.try_backward(sensors);
     }
 };
+
 
 struct RotateLeft : Command {
     RotateLeft() = default;
 
-    int move_rover(Rover &rover) override {
-        Direction d = rover.get_direction();
-        --d;
-        rover.set_direction(d);
-        return 0;
+    void move_rover(RoverState& rover_state, const std::vector<std::shared_ptr<Sensor>>& sensors){
+        rover_state.rotate_left();
     }
 };
 
 struct RotateRight : Command {
     RotateRight() = default;
 
-    int move_rover(Rover &rover) override {
-        Direction d = rover.get_direction();
-        ++d;
-        rover.set_direction(d);
-        return 0;
+    void move_rover(RoverState& rover_state, const std::vector<std::shared_ptr<Sensor>>& sensors) {
+        rover_state.rotate_right();
     }
 };
 
@@ -94,16 +56,15 @@ struct RotateRight : Command {
 struct Compose : Command {
     Compose(std::initializer_list<ptr_to_command> _commands) : commands{_commands} { }
 
-    int move_rover(Rover &rover) override {
+    void move_rover(RoverState& rover_state, const std::vector<std::shared_ptr<Sensor>>& sensors) {
         for (auto &command : commands)
-            if (command->move_rover(rover) != 0)
-                return 1;
-        return 0;
+            command->move_rover(rover_state, sensors);
     }
 
 private:
     std::vector<ptr_to_command> commands;
 };
+
 
 #define MOVE_FORWARD 0
 #define MOVE_BACKWARD 1

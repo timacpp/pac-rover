@@ -3,85 +3,54 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include "direction.h"
+#include "position.h"
+#include "command.h"
+#include "rover_state.h"
 
-using coordinate_t = int;
-// TODO: potencjalnie mozna zrobic klase coordinates, razem z ostreamem
-using coordinates = std::pair<coordinate_t, coordinate_t>;
-
-struct Sensor {
-    virtual bool is_safe(coordinate_t x, coordinate_t y) = 0;
-};
 
 class Rover {
 private:
-    coordinates coord;
-    Direction direction;
-    bool landed = false;
-    bool stopped = false;
-    std::vector<Sensor> sensors;
-
-    bool is_safe(coordinates coords) {
-        for (auto &sensor : sensors)
-            if (!sensor.is_safe(coords.first, coords.second))
-                return false;
-        return true;
-    }
+    RoverState state;
+    std::vector<std::shared_ptr<Sensor>> sensors;
+    std::unordered_map<char, std::shared_ptr<Command>> buttons;
 
 public:
-    Rover() {};
+    Rover() = delete;
 
-    Direction get_direction() {
-        return direction;
-    }
+    Rover(std::unordered_map<char, std::shared_ptr<Command>>& _buttons,
+          std::vector<std::shared_ptr<Sensor>>& _sensors) :
+          buttons(std::move(_buttons)),
+          sensors(std::move(_sensors))
+          { };
 
-    void set_direction(Direction _direction) {
-        direction = _direction;
-    }
-
-    coordinates get_coordinates() {
-        return coord;
-    }
-
-    bool got_stopped() {
-        return stopped;
-    }
-
-    int check_and_go(coordinates _coord) {
-        stopped = !is_safe(_coord);
-        if (!stopped) {
-            coord = _coord;
-            return 0;
-        }
-        return 1;
-    }
-
-    void land(coordinates _coord, Direction _direction) {
-        coord = _coord;
-        direction = _direction;
-        landed = true;
+    void land(Position _coord, Direction _direction) {
+        state.land(_coord, _direction);
     };
 
-    void execute(std::string programm) {
-        if (!landed)
-            throw std::exception();
+    void execute(std::string&& program) {
+        try {
+            for (char c : program) {
+                auto command = buttons.find(c);
+                if (command == buttons.end()) {
+                    state.stop_rover();
+                    break;
+                }
+                else {
+                    command->second->move_rover(state, sensors);
+                }
+            }
+        }
+        catch (SensorFalse &s_false) { }
+    }
 
-
+    void execute(std::string& program) {
+        execute(std::move(program));
     }
 
     friend std::ostream& operator<<(std::ostream& ostream, const Rover& rover) {
-        if (!rover.landed) {
-            ostream << "unknown\n";
-            return ostream;
-        }
-        else {
-            ostream << '(' << rover.coord.first << ", " << rover.coord.second << ") "
-                    << "DIRECTION";
-            if (rover.stopped)
-                ostream << " stopped";
-            ostream << '\n';
-            return ostream;
-        }
+        return ostream << rover.state << '\n';
     }
 };
 
