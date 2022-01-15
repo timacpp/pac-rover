@@ -1,16 +1,4 @@
-/snap/clion/178/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/snap/clion/178/bin/ninja/linux/ninja -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_CXX_COMPILER=/bin/c++ -G Ninja /home/tima/Coding/C&C++/space-rover
--- The C compiler identification is GNU 11.1.0
--- The CXX compiler identification is GNU 11.1.0
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Check for working C compiler: /usr/bin/gcc - skipped
--- Detecting C compile features
--- Detecting C compile features - done
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Check for working CXX compiler: /bin/c++ - skipped
--- Detecting CXX compile features
--- Detecting CXX compile features - done
+/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/ninja -G Ninja /Users/laplasjan/Documents/GitHub/space-rover
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/tima/Coding/C&C++/space-rover/cmake-build-debug
+-- Build files have been written to: /Users/laplasjan/Documents/GitHub/space-rover/cmake-build-debug

@@ -49,7 +49,7 @@ private:
     std::unordered_map<char, command_ptr> buttons;
 
     Rover(std::unordered_map<char, command_ptr>&& buttons, std::vector<sensor_ptr>&& sensors) :
-            buttons(std::move(buttons)), sensors(std::move(sensors)) {};
+        sensors(std::move(sensors)), buttons(std::move(buttons)) {};
 };
 
 class RoverBuilder {
@@ -58,6 +58,11 @@ public:
 
     RoverBuilder& program_command(char button, command_ptr&& command) {
         buttons[button] = std::move(command);
+        return *this;
+    }
+
+    RoverBuilder& program_command(char button, command_ptr& command) {
+        buttons[button] = command;
         return *this;
     }
 

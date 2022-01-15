@@ -40,7 +40,7 @@ struct RotateLeft : public Command {
 
     ~RotateLeft() override = default;
 
-    void perform(RoverState& state, const std::vector<sensor_ptr>& sensors) const override {
+    void perform(RoverState& state, [[maybe_unused]] const std::vector<sensor_ptr>& sensors) const override {
         state.rotate_left();
     }
 };
@@ -50,7 +50,7 @@ struct RotateRight : public Command {
 
     ~RotateRight() override = default;
 
-    void perform(RoverState& state, const std::vector<sensor_ptr>& sensors) const override {
+    void perform(RoverState& state, [[maybe_unused]] const std::vector<sensor_ptr>& sensors) const override {
         state.rotate_right();
     }
 };
