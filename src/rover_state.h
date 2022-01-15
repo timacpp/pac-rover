@@ -11,6 +11,7 @@ struct Sensor {
 };
 
 using sensor_ptr = std::unique_ptr<Sensor>;
+using sensor_vector = std::vector<sensor_ptr>;
 
 class SensorFalse : public std::exception {
 
@@ -22,6 +23,7 @@ public:
 
     void set(Position& landing_spot, Direction& facing_direction) {
         landed = true;
+        stopped = false;
         position = landing_spot;
         direction = facing_direction;
     }
@@ -30,7 +32,7 @@ public:
         stopped = true;
     }
 
-    void advance_forward(const std::vector<sensor_ptr>& sensors) {
+    void advance_forward(const sensor_vector& sensors) {
         if (!landed)
             throw std::exception();
         stopped = false;
@@ -59,7 +61,7 @@ public:
         position = other_position;
     }
 
-    void advance_backward(const std::vector<sensor_ptr>& sensors) {
+    void advance_backward(const sensor_vector& sensors) {
         if (!landed)
             throw std::exception();
         stopped = false;
