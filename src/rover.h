@@ -17,25 +17,25 @@ public:
           std::vector<sensor_ptr>&& sensors) :
             sensors(std::move(sensors)), buttons(std::move(buttons)) {};
 
-    void land(Position&& coord, Direction&& direction) {
+    void land(Position&& coord, Direction&& direction) noexcept {
         state.set(coord, direction);
     };
 
     void execute(std::string&& program) {
         try {
             for (char subprogram : program) {
-                auto command_it = buttons.find(subprogram);
+                const auto command_it{buttons.find(subprogram)};
+
                 if (command_it == buttons.end()) {
-                    state.stop_rover();
+                    state.freeze();
                     break;
                 }
-                else {
-                    command_it->second->perform(state, sensors);
-                }
+
+                command_it->second->perform(state, sensors);
             }
         }
-        catch (PositionIsUnsafe &s_false) {
-
+        catch (const PositionIsUnsafe& s_false) {
+            /* The previous state is already preserved. */
         }
     }
 

@@ -27,7 +27,7 @@ public:
         direction = facing_direction;
     }
 
-    void stop_rover() noexcept {
+    void freeze() noexcept {
         stopped = true;
     }
 

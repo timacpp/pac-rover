@@ -56,5 +56,4 @@ std::ostream& operator<<(std::ostream& out, const Direction& dir) {
     return out << DIRECTION_NAME[static_cast<ordinal_t>(dir)];
 }
 
-
 #endif // DIRECTION_H
