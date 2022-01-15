@@ -13,6 +13,10 @@ class RoverBuilder;
 
 class Rover {
 public:
+    Rover(std::unordered_map<char, command_ptr>&& buttons,
+          std::vector<sensor_ptr>&& sensors) :
+            sensors(std::move(sensors)), buttons(std::move(buttons)) {};
+
     void land(Position&& coord, Direction&& direction) {
         state.set(coord, direction);
     };
@@ -30,26 +34,23 @@ public:
                 }
             }
         }
-        catch (SensorFalse &s_false) { }
+        catch (PositionIsUnsafe &s_false) {
+
+        }
     }
 
     void execute(std::string& program) {
         execute(std::move(program));
     }
 
-    friend std::ostream& operator<<(std::ostream& ostream, const Rover& rover) {
-        return ostream << rover.state;
+    friend std::ostream& operator<<(std::ostream& out, const Rover& rover) {
+        return out << rover.state;
     }
 
 private:
-    friend class RoverBuilder;
-
     RoverState state;
     std::vector<sensor_ptr> sensors;
     std::unordered_map<char, command_ptr> buttons;
-
-    Rover(std::unordered_map<char, command_ptr>&& buttons, std::vector<sensor_ptr>&& sensors) :
-        sensors(std::move(sensors)), buttons(std::move(buttons)) {};
 };
 
 class RoverBuilder {

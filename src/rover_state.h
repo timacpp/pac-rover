@@ -7,101 +7,44 @@
 struct Sensor {
     virtual bool is_safe(coordinate_t x, coordinate_t y) = 0;
 
-    virtual ~Sensor() = default; // TODO: default is bad
+    virtual ~Sensor() = default;
 };
 
 using sensor_ptr = std::unique_ptr<Sensor>;
 using sensor_vector = std::vector<sensor_ptr>;
 
-class SensorFalse : public std::exception {
-
-};
+class PositionIsUnsafe : public std::exception {};
+class RoverNotLanded : public std::exception {};
 
 class RoverState {
 public:
     RoverState() : landed{false}, stopped{false}, direction{Direction::NORTH} {}
 
-    void set(Position& landing_spot, Direction& facing_direction) {
+    void set(Position& landing_spot, Direction& facing_direction) noexcept {
         landed = true;
         stopped = false;
         position = landing_spot;
         direction = facing_direction;
     }
 
-    void stop_rover() {
+    void stop_rover() noexcept {
         stopped = true;
     }
 
     void advance_forward(const sensor_vector& sensors) {
-        if (!landed)
-            throw std::exception();
-        stopped = false;
-        Position other_position = position;
-        switch (direction) {
-            case Direction::NORTH:
-                other_position += {0, 1};
-                break;
-            case Direction::EAST:
-                other_position += {1, 0};
-                break;
-            case Direction::SOUTH:
-                other_position += {0, -1};
-                break;
-            case Direction::WEST:
-                other_position += {-1, 0};
-        }
-
-        for (auto &sensor : sensors) {
-            if (!sensor->is_safe(other_position.get_x(), other_position.get_y())) {
-                stopped = true;
-                throw SensorFalse();
-            }
-        }
-
-        position = other_position;
+        advance(sensors, true);
     }
 
     void advance_backward(const sensor_vector& sensors) {
-        if (!landed)
-            throw std::exception();
-        stopped = false;
-        Position other_position = position;
-        switch (direction) {
-            case Direction::NORTH:
-                other_position += {0, -1};
-                break;
-            case Direction::EAST:
-                other_position += {-1, 0};
-                break;
-            case Direction::SOUTH:
-                other_position += {0, 1};
-                break;
-            case Direction::WEST:
-                other_position += {1, 0};
-        }
-
-        for (auto &sensor : sensors) {
-            if (!sensor->is_safe(other_position.get_x(), other_position.get_y())) {
-                stopped = true;
-                throw SensorFalse();
-            }
-        }
-
-        position = other_position;
+        advance(sensors, false);
     }
 
     void rotate_right() {
-        if (!landed)
-            throw std::exception();
-        stopped = false;
-        ++direction;
+        rotate(true);
     }
 
     void rotate_left() {
-        if (!landed)
-            throw std::exception();
-        stopped = false;
-        --direction;
+        rotate(false);
     }
 
     friend std::ostream& operator<<(std::ostream& out, const RoverState& state) noexcept {
@@ -112,7 +55,42 @@ public:
                    << state.direction
                    << (state.stopped ? " stopped" : "");
     }
+
 private:
+    void advance(const sensor_vector& sensors, bool forward) {
+        if (!landed) {
+            throw RoverNotLanded();
+        }
+
+        stopped = false;
+
+        const Position dir_offset{offset(direction)};
+        Position next_position = position + (forward ? dir_offset : -dir_offset);
+
+        for (auto &sensor : sensors) {
+            if (!sensor->is_safe(next_position.get_x(), next_position.get_y())) {
+                stopped = true;
+                throw PositionIsUnsafe();
+            }
+        }
+
+        position = next_position;
+    }
+
+    void rotate(bool right) {
+        if (!landed) {
+            throw RoverNotLanded();
+        }
+
+        stopped = false;
+
+        if (right) {
+            ++direction;
+        } else {
+            --direction;
+        }
+    }
+
     bool landed;
     bool stopped;
     Position position;
