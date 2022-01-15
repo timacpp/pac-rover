@@ -13,8 +13,17 @@ struct Sensor {
 using sensor_ptr = std::unique_ptr<Sensor>;
 using sensor_vector = std::vector<sensor_ptr>;
 
-class PositionIsUnsafe : public std::exception {};
-class RoverNotLanded : public std::exception {};
+class PositionIsUnsafe : public std::exception {
+    [[nodiscard]] const char* what() const noexcept override {
+        return "PositionIsUnsafe\0";
+    }
+};
+
+class RoverNotLanded : public std::exception {
+    [[nodiscard]] const char* what() const noexcept override {
+        return "RoverNotLanded\0";
+    }
+};
 
 class RoverState {
 public:
