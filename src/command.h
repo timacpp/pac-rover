@@ -72,34 +72,24 @@ private:
     std::vector<command_ptr> commands;
 };
 
-#define MOVE_FORWARD 0
-#define MOVE_BACKWARD 1
-#define ROTATE_LEFT 2
-#define ROTATE_RIGHT 3
-command_ptr basic_commands[4];
-
 command_ptr move_forward() {
-    if (!basic_commands[MOVE_FORWARD])
-        basic_commands[MOVE_FORWARD] = std::make_shared<MoveForward>();
-    return basic_commands[MOVE_FORWARD];
+    static auto command{std::make_shared<MoveForward>()};
+    return command;
 }
 
 command_ptr move_backward() {
-    if (!basic_commands[MOVE_BACKWARD])
-        basic_commands[MOVE_BACKWARD] = std::make_shared<MoveBackward>();
-    return basic_commands[MOVE_BACKWARD];
+    static auto command{std::make_shared<MoveBackward>()};
+    return command;
 }
 
 command_ptr rotate_left() {
-    if (!basic_commands[ROTATE_LEFT])
-        basic_commands[ROTATE_LEFT] = std::make_shared<RotateLeft>();
-    return basic_commands[ROTATE_LEFT];
+    static auto command{std::make_shared<RotateLeft>()};
+    return command;
 }
 
 command_ptr rotate_right() {
-    if (!basic_commands[ROTATE_RIGHT])
-        basic_commands[ROTATE_RIGHT] = std::make_shared<RotateRight>();
-    return basic_commands[ROTATE_RIGHT];
+    static auto command{std::make_shared<RotateRight>()};
+    return command;
 }
 
 command_ptr compose(std::initializer_list<command_ptr> command_list) {
