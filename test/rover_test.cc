@@ -12,7 +12,7 @@ using namespace std;
 
 int main() {
     // Podczas budowy łazika można zaprogramawać jego komendy oraz ustawić różne czujniki.
-
+/*
     ptr_to_command c = move_forward();
 
     ptr_to_command cc = compose({move_forward(), move_forward(), rotate_left(), move_forward()});
@@ -43,7 +43,7 @@ int main() {
     cout << r;
     r.execute("D");
     cout << r;
-    /*
+
     cout << r;
     r.execute("AAAAA");
     cout << r;

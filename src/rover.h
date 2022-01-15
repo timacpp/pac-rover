@@ -9,22 +9,22 @@
 #include "command.h"
 #include "rover_state.h"
 
+class RoverBuilder;
 
 class Rover {
+    friend class RoverBuilder;
 private:
     RoverState state;
-    std::vector<std::shared_ptr<Sensor>> sensors;
+    std::vector<std::unique_ptr<Sensor>> sensors;
     std::unordered_map<char, std::shared_ptr<Command>> buttons;
 
+    Rover(std::unordered_map<char, std::shared_ptr<Command>>&& _buttons,
+          std::vector<std::unique_ptr<Sensor>>&& _sensors) :
+            buttons(std::move(_buttons)),
+            sensors(std::move(_sensors))
+    { };
+
 public:
-    Rover() = delete;
-
-    Rover(std::unordered_map<char, std::shared_ptr<Command>>& _buttons,
-          std::vector<std::shared_ptr<Sensor>>& _sensors) :
-          buttons(std::move(_buttons)),
-          sensors(std::move(_sensors))
-          { };
-
     void land(Position _coord, Direction _direction) {
         state.land(_coord, _direction);
     };
@@ -50,7 +50,28 @@ public:
     }
 
     friend std::ostream& operator<<(std::ostream& ostream, const Rover& rover) {
-        return ostream << rover.state << '\n';
+        return ostream << rover.state;
+    }
+};
+
+class RoverBuilder {
+    std::vector<std::unique_ptr<Sensor>> sensors;
+    std::unordered_map<char, std::shared_ptr<Command>> buttons;
+public:
+    RoverBuilder() = default;
+
+    RoverBuilder& program_command(char button, std::shared_ptr<Command>&& command) {
+        buttons.insert({button, std::move(command)});
+        return *this;
+    }
+
+    RoverBuilder& add_sensor(std::unique_ptr<Sensor> sensor) {
+        sensors.push_back(std::move(sensor));
+        return *this;
+    }
+
+    Rover build() {
+        return {std::move(buttons), std::move(sensors)};
     }
 };
 

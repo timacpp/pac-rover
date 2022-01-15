@@ -13,7 +13,7 @@
 #include "direction.h"
 
 struct Command {
-    virtual void move_rover(RoverState& rover_state, const std::vector<std::shared_ptr<Sensor>>& sensors) = 0;
+    virtual void move_rover(RoverState& rover_state, const std::vector<std::unique_ptr<Sensor>>& sensors) = 0;
 };
 
 using ptr_to_command = std::shared_ptr<Command>;
@@ -21,7 +21,7 @@ using ptr_to_command = std::shared_ptr<Command>;
 struct MoveForward : Command {
     MoveForward() = default;
 
-    void move_rover(RoverState& rover_state, const std::vector<std::shared_ptr<Sensor>>& sensors) override {
+    void move_rover(RoverState& rover_state, const std::vector<std::unique_ptr<Sensor>>& sensors) override {
         rover_state.try_forward(sensors);
     }
 };
@@ -30,7 +30,7 @@ struct MoveForward : Command {
 struct MoveBackward : Command {
     MoveBackward() = default;
 
-    void move_rover(RoverState& rover_state, const std::vector<std::shared_ptr<Sensor>>& sensors) override {
+    void move_rover(RoverState& rover_state, const std::vector<std::unique_ptr<Sensor>>& sensors) override {
         rover_state.try_backward(sensors);
     }
 };
@@ -39,7 +39,7 @@ struct MoveBackward : Command {
 struct RotateLeft : Command {
     RotateLeft() = default;
 
-    void move_rover(RoverState& rover_state, const std::vector<std::shared_ptr<Sensor>>& sensors){
+    void move_rover(RoverState& rover_state, const std::vector<std::unique_ptr<Sensor>>& sensors){
         rover_state.rotate_left();
     }
 };
@@ -47,7 +47,7 @@ struct RotateLeft : Command {
 struct RotateRight : Command {
     RotateRight() = default;
 
-    void move_rover(RoverState& rover_state, const std::vector<std::shared_ptr<Sensor>>& sensors) {
+    void move_rover(RoverState& rover_state, const std::vector<std::unique_ptr<Sensor>>& sensors) {
         rover_state.rotate_right();
     }
 };
@@ -56,7 +56,7 @@ struct RotateRight : Command {
 struct Compose : Command {
     Compose(std::initializer_list<ptr_to_command> _commands) : commands{_commands} { }
 
-    void move_rover(RoverState& rover_state, const std::vector<std::shared_ptr<Sensor>>& sensors) {
+    void move_rover(RoverState& rover_state, const std::vector<std::unique_ptr<Sensor>>& sensors) {
         for (auto &command : commands)
             command->move_rover(rover_state, sensors);
     }

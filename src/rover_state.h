@@ -9,6 +9,8 @@ using coordinates = std::pair<coordinate_t, coordinate_t>;
 
 struct Sensor {
     virtual bool is_safe(coordinate_t x, coordinate_t y) = 0;
+
+    virtual ~Sensor() { }
 };
 
 class SensorFalse : public std::exception {
@@ -36,7 +38,7 @@ public:
         stopped = true;
     }
 
-    void try_forward(const std::vector<std::shared_ptr<Sensor>> &sensors) {
+    void try_forward(const std::vector<std::unique_ptr<Sensor>> &sensors) {
         if (!landed)
             throw std::exception();
         stopped = false;
@@ -65,7 +67,7 @@ public:
         current_position = position;
     }
 
-    void try_backward(const std::vector<std::shared_ptr<Sensor>> &sensors) {
+    void try_backward(const std::vector<std::unique_ptr<Sensor>> &sensors) {
         if (!landed)
             throw std::exception();
         stopped = false;
