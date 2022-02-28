@@ -6,25 +6,21 @@
 #include "../src/command.h"
 #include "../src/direction.h"
 
-// import "../src/rover"; // TODO: idk how to import from a subdirectory
-
 using namespace std;
 
 int main() {
-    // Podczas budowy łazika można zaprogramawać jego komendy oraz ustawić różne czujniki.
-/*
     command_ptr c = move_forward();
 
     command_ptr cc = compose({move_forward(), move_forward(), rotate_left(), move_forward()});
-    std::unordered_map<char, std::shared_ptr<Command>> comm;
+    std::unordered_map<char, command_ptr> comm;
     comm.insert({'A', c});
     comm.insert({'B', cc});
     comm.insert({'C', rotate_left()});
     comm.insert({'D', rotate_right()});
 
-    vector<shared_ptr<Sensor>> sensors;
-    Rover r{comm, sensors};
-    r.set({0, 0}, Direction::EAST);
+    vector<sensor_ptr> sensors;
+    Rover r{std::move(comm), std::move(sensors)};
+    r.land({0, 0}, Direction::EAST);
     cout << r;
     r.execute("C");
     cout << r;
@@ -54,6 +50,5 @@ int main() {
     r.execute("BA");
     cout << r;
     r.execute("BA");
-    cout << r; */
-
+    cout << r;
 }

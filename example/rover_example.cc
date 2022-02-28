@@ -6,8 +6,6 @@
 #include "../src/command.h"
 #include "../src/direction.h"
 
-// import "../src/rover"; // TODO: idk how to import from a subdirectory
-
 struct TrueSensor : public Sensor {
     bool is_safe([[maybe_unused]] coordinate_t x,
                  [[maybe_unused]] coordinate_t y) override {
@@ -22,8 +20,16 @@ struct FalseSensor : public Sensor {
     }
 };
 
+// The output is:
+// unknown
+// (0, 0) EAST
+// (1, 0) WEST
+// (0, 0) WEST stopped
+// (-3, 0) WEST
+// (-1, -1) WEST stopped
+
 int main() {
-    // Podczas budowy łazika można zaprogramawać jego komendy oraz ustawić różne czujniki.
+    // While building a rover, one can program commands
     auto rover = RoverBuilder()
             .program_command('F', move_forward())
             .program_command('B', move_backward())
@@ -34,7 +40,7 @@ int main() {
             .add_sensor(std::make_unique<TrueSensor>())
             .build();
 
-    // Przed lądowaniem nie jest możliwe sterowanie łazikiem.
+    // Rover is controllable only after landing
     std::cout << rover << std::endl;
     try {
         rover.execute("F");
@@ -42,21 +48,21 @@ int main() {
     } catch (std::exception const& e) {
     }
 
-    // Po lądowaniu łazik wykonuje przesłane komendy.
+    // After landing rover processes given commands
     rover.land({0, 0}, Direction::EAST);
     std::cout << rover << std::endl;
     rover.execute("FFBRLU");
     std::cout << rover << std::endl;
 
-    // Łazik zatrzymuje się, gdy napotka nieznaną komendę.
+    // Rover stops if it doesn't know the command
     rover.execute("FXFFF");
     std::cout << rover << std::endl;
 
-    // Łazik wykonuje poprawne komendy.
+    // Examples of correct commands
     rover.execute("FFF");
     std::cout << rover << std::endl;
 
-    // Łazik zatrzymuje się również, gdy czujniki zgłaszają niebezpieczeństwo.
+    // Rover stops if its sensors detect danger
     auto broken_rover = RoverBuilder()
             .program_command('X', move_forward())
             .add_sensor(std::make_unique<FalseSensor>())
