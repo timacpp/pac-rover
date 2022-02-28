@@ -1,4 +1,0 @@
-/home/tima/Coding/C&C++/space-rover/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/tima/Coding/C&C++/space-rover/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/tima/Coding/C&C++/space-rover/cmake-build-debug/CMakeFiles/examples.dir
-/home/tima/Coding/C&C++/space-rover/cmake-build-debug/CMakeFiles/test.dir
